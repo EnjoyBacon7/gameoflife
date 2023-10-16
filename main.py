@@ -48,7 +48,7 @@ def menus(appState, screen):
     # Initialise menu demo
     gameState = simulation.initGame()
     simulation.loadPreset(gameState, "Gosper Glider Gun")
-    gameState["simSpeed"] = 10
+    gameState["simSpeed"] = -1
 
     running = True
     while running:

@@ -153,10 +153,13 @@ def drawHUD(gameState, screen):
     simSpeed = gameState["simSpeed"]
     pause = gameState["pause"]
 
-    hud = pygame.Surface((200, 120), pygame.SRCALPHA)
+    infobox_w = config.INFO_BOX_SIZE[0] * config.RESOLUTION[0] / 100
+    infobox_h = config.INFO_BOX_SIZE[1] * config.RESOLUTION[1] / 100
 
-    pygame.draw.rect(hud, config.COLOR_INFO_BG, (0, 0, 200, 120), 0, 10)
-    pygame.draw.rect(hud, config.COLOR_INFO_BORDER, (0, 0, 200, 120), 2, 10)
+    hud = pygame.Surface((infobox_w, infobox_h), pygame.SRCALPHA)
+
+    pygame.draw.rect(hud, config.COLOR_INFO_BG, (0, 0, infobox_w, infobox_h), 0, 10)
+    pygame.draw.rect(hud, config.COLOR_INFO_BORDER, (0, 0, infobox_w, infobox_h), 2, 10)
 
     hud.blit(font.render("Zoom: " + str(round(zoom_factor, 2)), True, (0, 0, 0)), (10, 10))
     hud.blit(font.render("Offset: " + str(round(offset[0], 2)) + ", " + str(round(offset[1], 2)), True, (0, 0, 0)), (10, 40))
