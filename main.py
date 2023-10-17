@@ -14,8 +14,8 @@ def main():
     screen = initPygame()
 
     while True:
-            # Display the main menu
-        menus(appState, screen)
+        # Display the main menu
+        #menus(appState, screen)
 
         # Initialise the game state
         gameState = simulation.initGame()
@@ -72,9 +72,6 @@ def menus(appState, screen):
         # Tick
         gameState["gameClock"].tick(config.FPS_MAX)
 
-
-
-                        
 
 def drawMenus(appState, screen):
     drawMainMenu(appState, screen)
