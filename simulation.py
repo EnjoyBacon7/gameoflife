@@ -49,7 +49,7 @@ def loop(appState, gameState):
 # ---------- Handle Inputs and Events ----------
 def handleEvents(appState, gameState):
 
-    if gameState["pause"] or appState["gui"] == False:
+    if appState["gui"] == False:
         return
 
     # One press events
@@ -185,6 +185,9 @@ def drawHUD(gameState, appState):
 
 # ---------- Game Logic ----------
 def handleGameLogic(gameState):
+
+    if(gameState["pause"]):
+        return
 
     # Check if game should be updated
     timeSinceStep = (pygame.time.get_ticks() - gameState["simTimer"])
