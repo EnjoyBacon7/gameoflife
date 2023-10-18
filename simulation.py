@@ -35,7 +35,7 @@ def initGame():
 # Game Loop
 # -----------------------------------------------------------------------------
 
-def loop(appState, gameState, screen):
+def loop(appState, gameState):
     running = True
 
     # Logging (depending on app args)
@@ -53,7 +53,7 @@ def loop(appState, gameState, screen):
             # Then handle game logic
             handleGameLogic(gameState)
             # Then draw
-            drawGame(appState, gameState, screen)
+            drawGame(appState, gameState)
 
         elif appState["logging"] == 1:
             log_start = time.perf_counter_ns()
@@ -62,7 +62,7 @@ def loop(appState, gameState, screen):
             # Then handle game logic
             handleGameLogic(gameState)
             # Then draw
-            drawGame(appState, gameState, screen)
+            drawGame(appState, gameState)
             log_end = time.perf_counter_ns()
         
         elif appState["logging"] == 2:
@@ -72,7 +72,7 @@ def loop(appState, gameState, screen):
             handleGameLogic(gameState)
             log_start = time.perf_counter_ns()
             # Then draw
-            drawGame(appState, gameState, screen)
+            drawGame(appState, gameState)
             log_end = time.perf_counter_ns()
         
         elif appState["logging"] == 3:
@@ -83,7 +83,7 @@ def loop(appState, gameState, screen):
             handleGameLogic(gameState)
             log_end = time.perf_counter_ns()
             # Then draw
-            drawGame(appState, gameState, screen)
+            drawGame(appState, gameState)
 
         # add entry to log
         if(appState["logging"] != 0):
@@ -122,7 +122,7 @@ def handleEvents(appState, gameState):
             pygame.quit()
         # Resize window
         elif event.type == pygame.VIDEORESIZE:
-            pass
+            appState["resolution"] = event.size
         elif event.type == pygame.KEYDOWN:
             # Quit [ESC]
             if event.key == pygame.K_ESCAPE:
@@ -175,20 +175,25 @@ def handleEvents(appState, gameState):
 
 
 # ---------- Draw the game ----------
-def drawGame(appState, gameState, screen):
+def drawGame(appState, gameState):
 
     if(not appState["gui"]):
         return
 
-    screen.fill(config.COLOR_BACKGROUND)
-    drawCells(gameState, screen)
-    drawGrid(gameState, screen)
-    drawHUD(gameState, screen)
+    appState["screen"]
+
+    appState["screen"].fill(config.COLOR_BACKGROUND)
+    drawCells(gameState, appState)
+    drawGrid(gameState, appState)
+    drawHUD(gameState, appState)
     
     pygame.display.flip()
 
 
-def drawGrid(gameState, screen):
+def drawGrid(gameState, appState):
+
+    screen = appState["screen"]
+    resolution = appState["resolution"]
     zoom_factor = gameState["zoom_factor"]
     pos = gameState["offset"]
 
@@ -196,15 +201,14 @@ def drawGrid(gameState, screen):
     grid_offset_px = ((int(pos[0] * cell_size_px) % cell_size_px),
                       (int(pos[1] * cell_size_px)) % cell_size_px)
 
-    for i in range(int(config.RESOLUTION[0] / cell_size_px)):
-        pygame.draw.line(screen, config.COLOR_GRID, (i * cell_size_px +
-                         grid_offset_px[0], 0), (i * cell_size_px + grid_offset_px[0], config.RESOLUTION[1]))
-    for i in range(int(config.RESOLUTION[1] / cell_size_px)):
-        pygame.draw.line(screen, config.COLOR_GRID, (0, i * cell_size_px +
-                         grid_offset_px[1]), (config.RESOLUTION[0], i * cell_size_px + grid_offset_px[1]))
+    for i in range(int(resolution[0] / cell_size_px)):
+        pygame.draw.line(screen, config.COLOR_GRID, (i * cell_size_px + grid_offset_px[0], 0), (i * cell_size_px + grid_offset_px[0], resolution[1]))
+    for i in range(int(resolution[1] / cell_size_px)):
+        pygame.draw.line(screen, config.COLOR_GRID, (0, i * cell_size_px + grid_offset_px[1]), (resolution[0], i * cell_size_px + grid_offset_px[1]))
 
 
-def drawCells(gameState, screen):
+def drawCells(gameState, appState):
+    screen = appState["screen"]
     board = gameState["board"]
     zoom_factor = gameState["zoom_factor"]
     offset = gameState["offset"]
@@ -216,15 +220,17 @@ def drawCells(gameState, screen):
         pygame.draw.rect(screen, config.COLOR_CELL, (board[i][0]*cell_size_px + pos_px[0],
                          board[i][1]*cell_size_px + pos_px[1], cell_size_px, cell_size_px))
 
-def drawHUD(gameState, screen):
+def drawHUD(gameState, appState):
+    resolution = appState["resolution"]
+    screen = appState["screen"]
     font = pygame.font.SysFont("Roboto", 30)
     zoom_factor = gameState["zoom_factor"]
     offset = gameState["offset"]
     simSpeed = gameState["simSpeed"]
     pause = gameState["pause"]
 
-    infobox_w = config.INFO_BOX_SIZE[0] * config.RESOLUTION[0] / 100
-    infobox_h = config.INFO_BOX_SIZE[1] * config.RESOLUTION[1] / 100
+    infobox_w = config.INFO_BOX_SIZE[0] * resolution[0] / 100
+    infobox_h = config.INFO_BOX_SIZE[1] * resolution[1] / 100
 
     hud = pygame.Surface((infobox_w, infobox_h), pygame.SRCALPHA)
 
@@ -237,7 +243,7 @@ def drawHUD(gameState, screen):
     hud.blit(font.render("Pause: " + str(pause), True, (0, 0, 0)), (10, 100))
     hud.blit(font.render("Steps: " + str(gameState["simSteps"]), True, (0, 0, 0)), (10, 130))
 
-    screen.blit(hud, (config.INFO_BOX_POS[0] * config.RESOLUTION[0] / 100, config.INFO_BOX_POS[1] * config.RESOLUTION[1] / 100))
+    screen.blit(hud, (config.INFO_BOX_POS[0] * resolution[0] / 100, config.INFO_BOX_POS[1] * resolution[1] / 100))
 
 
 # ---------- Game Logic ----------
