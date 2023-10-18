@@ -12,7 +12,10 @@ def main():
 
     # Initialise pygame and app state
     appState = initApp()
-    screen = initPygame()
+    screen = None
+    if appState["gui"] == True:
+        screen = initPygame(appState)
+    
 
     # Display the main menu
     #menus(appState, screen)
@@ -28,9 +31,9 @@ def main():
 # -----------------------------------------------------------------------------
 
 # Initialise pygame
-def initPygame():
+def initPygame(appState):
     pygame.init()
-    screen = pygame.display.set_mode(config.RESOLUTION, pygame.RESIZABLE)
+    screen = pygame.display.set_mode(appState["resolution"], pygame.RESIZABLE)
     pygame.display.set_caption("Game of Life")
     return screen
 
@@ -41,12 +44,18 @@ def initApp():
     group.add_argument("-lf", "--log_full", action="store_true", help="Log full data")
     group.add_argument("-lg", "--log_graphics", action="store_true", help="Log graphics data")
     group.add_argument("-ls", "--log_simulation", action="store_true", help="Log simulation data")
+    parser.add_argument("-nogui", action="store_true", help="disable gui")
+    parser.add_argument("-r", "--resolution", nargs=2, type=int, help="set resolution")
     args = parser.parse_args()
 
     appState = {
         "resolution": config.RESOLUTION,
+        "gui": not args.nogui,
         "logging": 0,
     }
+    print(args.resolution)
+    if args.resolution:
+        appState["resolution"] = args.resolution
 
     if args.log_full:
         appState["logging"] = 1
