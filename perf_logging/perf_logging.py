@@ -1,6 +1,6 @@
 import datetime
 import json
-import generate_graph
+import perf_logging.generate_graph as graph
 
 def init(log_state):
     log_type = ""
@@ -29,4 +29,4 @@ def dumpData(log_data):
     with open("perf_logging/logs/" + log_name, "w") as f:
         json.dump(log_data, f)
     
-    generate_graph.main(log_name)
+    graph.main(log_name)
