@@ -1,3 +1,6 @@
 test.py
 .vscode
 __pycache__
+.DS_Store
+graphs
+logs
