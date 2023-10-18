@@ -3,6 +3,7 @@ import init
 
 import config
 import simulation
+import perf_logging.simulation_perfs as simulation_perfs
 
 # -----------------------------------------------------------------------------
 # Main
@@ -11,15 +12,19 @@ import simulation
 def main():
 
     # Initialise pygame and app state
-    appState = init.initApp()    
+    appState = init.initApp()
 
     # Display the main menu
     #menus(appState, screen)
 
     # Initialise the game state
-    gameState = simulation.initGame()
+    gameState = simulation.init()
+    
     # Main loop
-    simulation.loop(appState, gameState)
+    if appState["logging"] != 0:
+        simulation_perfs.loop(appState, gameState)
+    else:
+        simulation.loop(appState, gameState)
 
 # -----------------------------------------------------------------------------
 # Menus
@@ -28,7 +33,7 @@ def main():
 def menus(appState, screen):
 
     # Initialise menu demo
-    gameState = simulation.initGame()
+    gameState = simulation.init()
     simulation.loadPreset(gameState, "Gosper Glider Gun")
     gameState["simSpeed"] = -1
 
