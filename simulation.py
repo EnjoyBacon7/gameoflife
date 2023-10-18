@@ -1,14 +1,12 @@
 import pygame
 import config
 import json
-from perf_logging import perf_logging
-import time
 
 # -----------------------------------------------------------------------------
 # Initialisation
 # -----------------------------------------------------------------------------
 
-def initGame():
+def init():
 
     # Board contains a 1D array of all live cells to lighten the load on the CPU (also allows for infinite board size)
 
@@ -36,78 +34,17 @@ def initGame():
 # -----------------------------------------------------------------------------
 
 def loop(appState, gameState):
-    running = True
-
-    # Logging (depending on app args)
-    log_data = perf_logging.init(appState["logging"])
-    log_start = 0
-    log_end = 0
 
     while gameState["quit"] == False:
 
-        # Logging check (to save redundant checks)
-
-        if appState["logging"] == 0:
-            # Start with inputs (and events)
-            handleEvents(appState, gameState)
-            # Then handle game logic
-            handleGameLogic(gameState)
-            # Then draw
-            drawGame(appState, gameState)
-
-        elif appState["logging"] == 1:
-            log_start = time.perf_counter_ns()
-            # Start with inputs (and events)
-            handleEvents(appState, gameState)
-            # Then handle game logic
-            handleGameLogic(gameState)
-            # Then draw
-            drawGame(appState, gameState)
-            log_end = time.perf_counter_ns()
-        
-        elif appState["logging"] == 2:
-            # Start with inputs (and events)
-            handleEvents(appState, gameState)
-            # Then handle game logic
-            handleGameLogic(gameState)
-            log_start = time.perf_counter_ns()
-            # Then draw
-            drawGame(appState, gameState)
-            log_end = time.perf_counter_ns()
-        
-        elif appState["logging"] == 3:
-            # Start with inputs (and events)
-            handleEvents(appState, gameState)
-            log_start = time.perf_counter_ns()
-            # Then handle game logic
-            handleGameLogic(gameState)
-            log_end = time.perf_counter_ns()
-            # Then draw
-            drawGame(appState, gameState)
-
-        # add entry to log
-        if(appState["logging"] != 0):
-            log_data["data"].append({
-                "frame_times": [log_end - log_start],
-                "sim_steps": gameState["simSteps"],
-                "sim_speed": gameState["simSpeed"],
-                "zoom_factor": gameState["zoom_factor"],
-                "offset": gameState["offset"],
-                "pause": gameState["pause"],
-                "resolution": appState["resolution"],
-            })
-            if(appState["gui"] == False):
-                print("Step: " + str(gameState["simSteps"]) + " | Frame Time (ns): " + str(log_end - log_start))
-            if(gameState["simSteps"] >= 1000):
-                gameState["quit"] = True
-    
-
+        # Start with inputs (and events)
+        handleEvents(appState, gameState)
+        # Then handle game logic
+        handleGameLogic(gameState)
+        # Then draw
+        drawGame(appState, gameState)
         # Tick
-        if appState["logging"] == 0:
-            gameState["gameClock"].tick(config.FPS_MAX)
-
-    # Dump log data to file
-    perf_logging.dumpData(log_data)
+        gameState["gameClock"].tick(config.FPS_MAX)
 
 # ---------- Handle Inputs and Events ----------
 def handleEvents(appState, gameState):
