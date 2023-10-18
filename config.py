@@ -1,5 +1,4 @@
 # Pygame variables
-RESOLUTION = (1280, 720)
 UNIT = 10
 FPS_MAX = 120
 INITIAL_OFFSET = (60, 20)
