@@ -45,30 +45,45 @@ def loop(appState, gameState, screen):
 
     while gameState["quit"] == False:
 
-        if(appState["logging"] == 1):
+        # Logging check (to save redundant checks)
+
+        if appState["logging"] == 0:
+            # Start with inputs (and events)
+            handleEvents(appState, gameState)
+            # Then handle game logic
+            handleGameLogic(gameState)
+            # Then draw
+            drawGame(appState, gameState, screen)
+
+        elif appState["logging"] == 1:
             log_start = time.perf_counter_ns()
-
-        # Start with inputs (and events)
-        handleEvents(gameState)
-
-        if(appState["logging"] == 3):
-            log_start = time.perf_counter_ns()
-
-        # Then handle game logic
-        handleGameLogic(gameState)
-
-        if(appState["logging"] == 3):
+            # Start with inputs (and events)
+            handleEvents(appState, gameState)
+            # Then handle game logic
+            handleGameLogic(gameState)
+            # Then draw
+            drawGame(appState, gameState, screen)
             log_end = time.perf_counter_ns()
-
-        if(appState["logging"] == 2):
+        
+        elif appState["logging"] == 2:
+            # Start with inputs (and events)
+            handleEvents(appState, gameState)
+            # Then handle game logic
+            handleGameLogic(gameState)
             log_start = time.perf_counter_ns()
-
-        # Draw
-        drawGame(gameState, screen)
-        pygame.display.flip()
-
-        if(appState["logging"] == 1 or appState["logging"] == 2):
+            # Then draw
+            drawGame(appState, gameState, screen)
             log_end = time.perf_counter_ns()
+        
+        elif appState["logging"] == 3:
+            # Start with inputs (and events)
+            handleEvents(appState, gameState)
+            log_start = time.perf_counter_ns()
+            # Then handle game logic
+            handleGameLogic(gameState)
+            log_end = time.perf_counter_ns()
+            # Then draw
+            drawGame(appState, gameState, screen)
 
         # add entry to log
         if(appState["logging"] != 0):
@@ -79,21 +94,25 @@ def loop(appState, gameState, screen):
                 "zoom_factor": gameState["zoom_factor"],
                 "offset": gameState["offset"],
                 "pause": gameState["pause"],
+                "resolution": appState["resolution"],
             })
+            if(appState["gui"] == False):
+                print("Step: " + str(gameState["simSteps"]) + " | Frame Time (ns): " + str(log_end - log_start))
             if(gameState["simSteps"] >= 1000):
                 gameState["quit"] = True
     
 
         # Tick
-        #gameState["gameClock"].tick(config.FPS_MAX)
+        if appState["logging"] == 0:
+            gameState["gameClock"].tick(config.FPS_MAX)
 
     # Dump log data to file
     perf_logging.dumpData(log_data)
 
 # ---------- Handle Inputs and Events ----------
-def handleEvents(gameState):
+def handleEvents(appState, gameState):
 
-    if gameState["pause"]:
+    if gameState["pause"] or appState["gui"] == False:
         return
 
     # One press events
@@ -156,13 +175,17 @@ def handleEvents(gameState):
 
 
 # ---------- Draw the game ----------
-def drawGame(gameState, screen, demo=False):
+def drawGame(appState, gameState, screen):
+
+    if(not appState["gui"]):
+        return
 
     screen.fill(config.COLOR_BACKGROUND)
     drawCells(gameState, screen)
     drawGrid(gameState, screen)
-    if(not demo):
-        drawHUD(gameState, screen)
+    drawHUD(gameState, screen)
+    
+    pygame.display.flip()
 
 
 def drawGrid(gameState, screen):
