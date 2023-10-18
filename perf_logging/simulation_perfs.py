@@ -26,7 +26,12 @@ def init_log(appState):
         "log_name": log_name,
         "resolution": appState["resolution"],
         "gui": appState["gui"],
+        "sim_speed": 0,
+        "zoom_factor": 0,
+        "offset": (0, 0),
+        "pause": False,
         "data": []
+
     }
 
     return log_data
@@ -78,13 +83,14 @@ def loop(appState, gameState):
 
         # add entry to log
         if(appState["logging"] != 0):
+
+            log_data["sim_speed"] = gameState["simSpeed"]
+            log_data["zoom_factor"] = gameState["zoom_factor"]
+            log_data["offset"] = gameState["offset"]
+            log_data["pause"] = gameState["pause"]
+
             log_data["data"].append({
-                "frame_times": [log_end - log_start],
-                "sim_steps": gameState["simSteps"],
-                "sim_speed": gameState["simSpeed"],
-                "zoom_factor": gameState["zoom_factor"],
-                "offset": gameState["offset"],
-                "pause": gameState["pause"],
+                "frame_time": [log_end - log_start],
             })
             if(appState["gui"] == False):
                 print("Step: " + str(gameState["simSteps"]) + " | Frame Time (ns): " + str(log_end - log_start))
