@@ -4,7 +4,10 @@ import datetime
 import json
 from perf_logging import generateGraph
 
-def init_log(log_type):
+def init_log(appState):
+
+    log_type = appState["logging"]
+
     log_type_str = ""
     if log_type == 0:
         return
@@ -21,6 +24,8 @@ def init_log(log_type):
     log_data = {
         "log_type": log_type_str,
         "log_name": log_name,
+        "resolution": appState["resolution"],
+        "gui": appState["gui"],
         "data": []
     }
 
@@ -34,7 +39,7 @@ def dumpData(log_data):
 def loop(appState, gameState):
 
     # Logging (depending on app args)
-    log_data = init_log(appState["logging"])
+    log_data = init_log(appState)
     log_start = 0
     log_end = 0
 
@@ -80,7 +85,6 @@ def loop(appState, gameState):
                 "zoom_factor": gameState["zoom_factor"],
                 "offset": gameState["offset"],
                 "pause": gameState["pause"],
-                "resolution": appState["resolution"],
             })
             if(appState["gui"] == False):
                 print("Step: " + str(gameState["simSteps"]) + " | Frame Time (ns): " + str(log_end - log_start))
