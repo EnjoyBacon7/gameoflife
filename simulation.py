@@ -2,6 +2,7 @@ import pygame
 import config
 import json
 from perf_logging import perf_logging
+import time
 
 # -----------------------------------------------------------------------------
 # Initialisation
@@ -45,29 +46,29 @@ def loop(appState, gameState, screen):
     while gameState["quit"] == False:
 
         if(appState["logging"] == 1):
-            log_start = pygame.time.get_ticks()
+            log_start = time.perf_counter_ns()
 
         # Start with inputs (and events)
         handleEvents(gameState)
 
         if(appState["logging"] == 3):
-            log_start = pygame.time.get_ticks()
+            log_start = time.perf_counter_ns()
 
         # Then handle game logic
         handleGameLogic(gameState)
 
         if(appState["logging"] == 3):
-            log_end = pygame.time.get_ticks()
+            log_end = time.perf_counter_ns()
 
         if(appState["logging"] == 2):
-            log_start = pygame.time.get_ticks()
+            log_start = time.perf_counter_ns()
 
         # Draw
         drawGame(gameState, screen)
         pygame.display.flip()
 
         if(appState["logging"] == 1 or appState["logging"] == 2):
-            log_end = pygame.time.get_ticks()
+            log_end = time.perf_counter_ns()
 
         # add entry to log
         if(appState["logging"] != 0):
@@ -79,7 +80,7 @@ def loop(appState, gameState, screen):
                 "offset": gameState["offset"],
                 "pause": gameState["pause"],
             })
-            if(gameState["simSteps"] >= 2000):
+            if(gameState["simSteps"] >= 1000):
                 gameState["quit"] = True
     
 
