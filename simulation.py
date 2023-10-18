@@ -1,7 +1,7 @@
 import pygame
 import config
 import json
-import datetime
+from perf_logging import perf_logging
 
 # -----------------------------------------------------------------------------
 # Initialisation
@@ -16,6 +16,8 @@ def initGame():
         "offset": config.INITIAL_OFFSET,
         "zoom_factor": 1,
         "pause": False,
+
+        # Simulation variables
         "simSteps": 0,
         "simTimer": 0,
         "simSpeed": -1,
@@ -32,41 +34,66 @@ def initGame():
 # Game Loop
 # -----------------------------------------------------------------------------
 
-def loop(gameState, screen):
+def loop(appState, gameState, screen):
     running = True
 
-    # open logging file
-    with open("log.json", "r") as f:
-        data = json.load(f)
-    new_entry = {"timestamp": str(datetime.datetime.now()), "message": "Original code with simple Gosper Glider Gun", "frame_times": []}  
+    # Logging (depending on app args)
+    log_data = perf_logging.init(appState["logging"])
+    log_start = 0
+    log_end = 0
 
     while gameState["quit"] == False:
 
-        frame_start = pygame.time.get_ticks()
+        if(appState["logging"] == 1):
+            log_start = pygame.time.get_ticks()
 
-        # Handle game logic
         # Start with inputs (and events)
         handleEvents(gameState)
+
+        if(appState["logging"] == 3):
+            log_start = pygame.time.get_ticks()
+
         # Then handle game logic
-        if(not gameState["pause"]):
-            handleGameLogic(gameState)
+        handleGameLogic(gameState)
+
+        if(appState["logging"] == 3):
+            log_end = pygame.time.get_ticks()
+
+        if(appState["logging"] == 2):
+            log_start = pygame.time.get_ticks()
 
         # Draw
         drawGame(gameState, screen)
         pygame.display.flip()
 
-        frame_end = pygame.time.get_ticks()
+        if(appState["logging"] == 1 or appState["logging"] == 2):
+            log_end = pygame.time.get_ticks()
 
-        new_entry["frame_times"].append(frame_end - frame_start)
+        # add entry to log
+        if(appState["logging"] != 0):
+            log_data["data"].append({
+                "frame_times": [log_end - log_start],
+                "sim_steps": gameState["simSteps"],
+                "sim_speed": gameState["simSpeed"],
+                "zoom_factor": gameState["zoom_factor"],
+                "offset": gameState["offset"],
+                "pause": gameState["pause"],
+            })
+            if(gameState["simSteps"] >= 2000):
+                gameState["quit"] = True
+    
 
         # Tick
         #gameState["gameClock"].tick(config.FPS_MAX)
-    data["log"].append(new_entry)
-    with open("log.json", "w") as f:
-        json.dump(data, f, indent=4)
+
+    # Dump log data to file
+    perf_logging.dumpData(log_data)
 
 # ---------- Handle Inputs and Events ----------
 def handleEvents(gameState):
+
+    if gameState["pause"]:
+        return
 
     # One press events
     for event in pygame.event.get():
