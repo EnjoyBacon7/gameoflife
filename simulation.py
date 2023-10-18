@@ -1,6 +1,7 @@
 import pygame
 import config
 import json
+import datetime
 
 # -----------------------------------------------------------------------------
 # Initialisation
@@ -14,14 +15,16 @@ def initGame():
         "board": [],
         "offset": config.INITIAL_OFFSET,
         "zoom_factor": 1,
-        "pause": True,
+        "pause": False,
         "simSteps": 0,
         "simTimer": 0,
-        "simSpeed": 1,
+        "simSpeed": -1,
         "gameClock": pygame.time.Clock(),
 
         "quit": False,
     }
+
+    loadPreset(gameState, "Gosper Glider Gun")
 
     return gameState
 
@@ -31,7 +34,15 @@ def initGame():
 
 def loop(gameState, screen):
     running = True
+
+    # open logging file
+    with open("log.json", "r") as f:
+        data = json.load(f)
+    new_entry = {"timestamp": str(datetime.datetime.now()), "message": "Original code with simple Gosper Glider Gun", "frame_times": []}  
+
     while gameState["quit"] == False:
+
+        frame_start = pygame.time.get_ticks()
 
         # Handle game logic
         # Start with inputs (and events)
@@ -43,8 +54,16 @@ def loop(gameState, screen):
         # Draw
         drawGame(gameState, screen)
         pygame.display.flip()
+
+        frame_end = pygame.time.get_ticks()
+
+        new_entry["frame_times"].append(frame_end - frame_start)
+
         # Tick
-        gameState["gameClock"].tick(config.FPS_MAX)
+        #gameState["gameClock"].tick(config.FPS_MAX)
+    data["log"].append(new_entry)
+    with open("log.json", "w") as f:
+        json.dump(data, f, indent=4)
 
 # ---------- Handle Inputs and Events ----------
 def handleEvents(gameState):

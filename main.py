@@ -13,14 +13,13 @@ def main():
     appState = initAppState()
     screen = initPygame()
 
-    while True:
-        # Display the main menu
-        #menus(appState, screen)
+    # Display the main menu
+    #menus(appState, screen)
 
-        # Initialise the game state
-        gameState = simulation.initGame()
-        # Main loop
-        simulation.loop(gameState, screen)
+    # Initialise the game state
+    gameState = simulation.initGame()
+    # Main loop
+    simulation.loop(gameState, screen)
 
 
 # -----------------------------------------------------------------------------
