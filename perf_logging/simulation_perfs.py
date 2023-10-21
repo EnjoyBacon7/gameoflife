@@ -4,6 +4,8 @@ import datetime
 import json
 from perf_logging import generateGraph
 
+STEP_LIMIT = 2000
+
 def init_log(appState):
 
     log_type = appState["logging"]
@@ -30,9 +32,11 @@ def init_log(appState):
         "zoom_factor": 0,
         "offset": (0, 0),
         "pause": False,
+        "test_time": time.perf_counter(),
         "data": []
 
     }
+    print(log_data["test_time"])
 
     return log_data
 
@@ -84,17 +88,19 @@ def loop(appState, gameState):
         # add entry to log
         if(appState["logging"] != 0):
 
-            log_data["sim_speed"] = gameState["simSpeed"]
-            log_data["zoom_factor"] = gameState["zoom_factor"]
-            log_data["offset"] = gameState["offset"]
-            log_data["pause"] = gameState["pause"]
-
             log_data["data"].append({
                 "frame_time": [log_end - log_start],
             })
             if(appState["gui"] == False):
                 print("Step: " + str(gameState["simSteps"]) + " | Frame Time (ns): " + str(log_end - log_start))
-            if(gameState["simSteps"] >= 1000):
+            if(gameState["simSteps"] >= STEP_LIMIT):
+
+                log_data["sim_speed"] = gameState["simSpeed"]
+                log_data["zoom_factor"] = gameState["zoom_factor"]
+                log_data["offset"] = gameState["offset"]
+                log_data["pause"] = gameState["pause"]
+                log_data["test_time"] = (time.perf_counter() - log_data["test_time"]) * 1000
+
                 gameState["quit"] = True
 
     # Dump log data to file
