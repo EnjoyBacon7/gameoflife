@@ -16,6 +16,8 @@ def initApp():
     parser.add_argument("-nogui", action="store_true", help="disable gui")
     parser.add_argument("-r", "--resolution", nargs=2, type=int, help="Set resolution")
     parser.add_argument("-p", "--preset", type=str, help="Load preset")
+    parser.add_argument("-b", "--board_size", nargs=2, type=int, help="Set board size")
+    parser.add_argument("-w", "--wrap", action="store_true", help="Enable wrapping")
     args = parser.parse_args()
 
     appState = {
@@ -23,7 +25,9 @@ def initApp():
         "gui": None,
         "logging": None,
         "screen": None,
-        "preset": None
+        "preset": None,
+        "board_size": None,
+        "wrap": None
     }
 
     if args.resolution:
@@ -49,6 +53,16 @@ def initApp():
         appState["preset"] = args.preset
     else:
         appState["preset"] = None
+
+    if args.board_size:
+        appState["board_size"] = args.board_size
+    else:
+        appState["board_size"] = (-1, -1)
+
+    if args.wrap:
+        appState["wrap"] = True
+    else:
+        appState["wrap"] = False
 
     pygame.init()
     if(appState["logging"] == 0):
