@@ -18,11 +18,7 @@ def main():
     #menus(appState, screen)
 
     # Initialise the game state
-    gameState = simulation.init()
-    
-    # Load preset if specified
-    if appState["preset"] != None:
-        simulation.loadPreset(gameState, appState["preset"])
+    gameState = simulation.init(appState)
 
     # Main loop
     if appState["logging"] != 0:
