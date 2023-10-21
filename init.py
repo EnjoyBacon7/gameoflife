@@ -45,9 +45,9 @@ def initApp():
 
     pygame.init()
     if(appState["logging"] == 0):
-        appState["screen"] = pygame.display.set_mode(args.resolution, pygame.RESIZABLE)
+        appState["screen"] = pygame.display.set_mode(appState["resolution"], pygame.RESIZABLE)
     else:
-        appState["screen"] = pygame.display.set_mode(args.resolution)
+        appState["screen"] = pygame.display.set_mode(appState["resolution"])
     pygame.display.set_caption("Game of Life")
 
     return appState
