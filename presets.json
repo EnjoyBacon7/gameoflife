@@ -1,5 +1,5 @@
 {
-    "Gosper Glider Gun": {
+    "gosper_glider_gun": {
         "live_cells": [
             [0, 4],
             [0, 5],
@@ -39,7 +39,7 @@
             [35, 3]
         ]
     },
-    "Penta-Decathlon": {
+    "penta_decathlon": {
         "live_cells": [
             [0, 1],
             [1, 1],
