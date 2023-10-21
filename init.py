@@ -15,13 +15,15 @@ def initApp():
     group.add_argument("-ls", "--log_simulation", action="store_true", help="Log simulation data")
     parser.add_argument("-nogui", action="store_true", help="disable gui")
     parser.add_argument("-r", "--resolution", nargs=2, type=int, help="Set resolution")
+    parser.add_argument("-p", "--preset", type=str, help="Load preset")
     args = parser.parse_args()
 
     appState = {
         "resolution": None,
         "gui": None,
         "logging": None,
-        "screen": None
+        "screen": None,
+        "preset": None
     }
 
     if args.resolution:
@@ -42,6 +44,11 @@ def initApp():
         appState["logging"] = 3
     else:
         appState["logging"] = 0
+
+    if args.preset:
+        appState["preset"] = args.preset
+    else:
+        appState["preset"] = None
 
     pygame.init()
     if(appState["logging"] == 0):
