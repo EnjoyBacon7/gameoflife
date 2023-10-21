@@ -25,8 +25,6 @@ def init():
         "quit": False,
     }
 
-    loadPreset(gameState, "Gosper Glider Gun")
-
     return gameState
 
 # -----------------------------------------------------------------------------
@@ -232,11 +230,6 @@ def loadPreset(gameState, preset):
     with open('presets.json', 'r') as f:
         data = json.load(f)
 
-    if(preset == "Gosper Glider Gun"):
-        for cell in data["Gosper Glider Gun"]["live_cells"]:
-            gameState["board"].append(tuple(cell))
-    elif(preset == "Penta-Decathlon"):
-        for cell in data["Penta-Decathlon"]["live_cells"]:
-            print("added cell")
-            gameState["board"].append(tuple(cell))
+    for cell in data[preset]["live_cells"]:
+        gameState["board"].append(tuple(cell))
 
