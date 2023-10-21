@@ -7,11 +7,6 @@ parameters=(
   "-ls -r 1080 720 -nogui"
   "-lg -r 1080 720"
   "-lg -r 1080 720 -nogui"
-  "-lf -r 1920 1080"
-  "-lf -r 1920 1080 -nogui"
-  "-ls -r 1920 1080 -nogui"
-  "-lg -r 1920 1080"
-  "-lg -r 1920 1080 -nogui"
 )
 
 # Loop over the parameters and run the Python script for each
