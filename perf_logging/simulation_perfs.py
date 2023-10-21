@@ -19,24 +19,26 @@ def init_log(appState):
         log_type_str = "graphics"
     elif log_type == 3:
         log_type_str = "simulation"
-
-    # Create file name
-    log_name = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-") + ".json"
     
     log_data = {
         "log_type": log_type_str,
-        "log_name": log_name,
+        "log_name": "",
         "resolution": appState["resolution"],
         "gui": appState["gui"],
+        "preset": appState["preset"],
         "sim_speed": 0,
         "zoom_factor": 0,
         "offset": (0, 0),
         "pause": False,
         "test_time": time.perf_counter(),
         "data": []
-
     }
-    print(log_data["test_time"])
+
+    # Create file name
+    log_time = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
+    log_name = log_type_str.capitalize() + "_Log_" + str(log_data["resolution"][1]) + "p_" + log_data["preset"] + "_" + log_time + ".json"
+
+    log_data["log_name"] = log_name
 
     return log_data
 
