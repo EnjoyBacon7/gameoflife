@@ -57,7 +57,6 @@ def handleEvents(appState, gameState):
             pygame.quit()
 
         if(appState["logging"] != 0):
-            print("looooogging and stopping input")
             continue
 
         # Resize window
@@ -75,7 +74,6 @@ def handleEvents(appState, gameState):
                 gameState["pause"] = not gameState["pause"]
 
     if(appState["logging"] != 0):
-        print("looooogging and stopping input")
         return
 
     # Hold events
@@ -217,7 +215,8 @@ def handleGameLogic(gameState):
                 if dx == 0 and dy == 0:
                     continue
                 neighbor = (x + dx, y + dy)
-                neighbor_coords.add(neighbor)
+                if neighbor not in neighbor_coords:
+                    neighbor_coords.add(neighbor)
     
     # Apply Conway's Game of Life rules
     for coord in neighbor_coords:
