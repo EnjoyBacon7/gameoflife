@@ -4,13 +4,11 @@
 parameters=(
   "-lf -r 1080 720"
   "-lf -r 1080 720 -nogui"
-  "-ls -r 1080 720"
   "-ls -r 1080 720 -nogui"
   "-lg -r 1080 720"
   "-lg -r 1080 720 -nogui"
   "-lf -r 1920 1080"
   "-lf -r 1920 1080 -nogui"
-  "-ls -r 1920 1080"
   "-ls -r 1920 1080 -nogui"
   "-lg -r 1920 1080"
   "-lg -r 1920 1080 -nogui"
