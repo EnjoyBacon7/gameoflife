@@ -55,6 +55,11 @@ def handleEvents(appState, gameState):
         # Quit (cmd+q, alt+f4, X button, etc.)
         if event.type == pygame.QUIT:
             pygame.quit()
+
+        if(appState["logging"] != 0):
+            print("looooogging and stopping input")
+            continue
+
         # Resize window
         elif event.type == pygame.VIDEORESIZE:
             appState["resolution"] = event.size
@@ -68,6 +73,10 @@ def handleEvents(appState, gameState):
             # Pause simulation [SPACE]
             elif(event.key == pygame.K_SPACE):
                 gameState["pause"] = not gameState["pause"]
+
+    if(appState["logging"] != 0):
+        print("looooogging and stopping input")
+        return
 
     # Hold events
     keys = pygame.key.get_pressed()
