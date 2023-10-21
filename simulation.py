@@ -6,15 +6,17 @@ import json
 # Initialisation
 # -----------------------------------------------------------------------------
 
-def init():
+def init(appState):
 
     # Board contains a 1D array of all live cells to lighten the load on the CPU (also allows for infinite board size)
 
     gameState = {
-        "board": [],
+        "board": loadPreset(appState["preset"]),
         "offset": config.INITIAL_OFFSET,
         "zoom_factor": 1,
         "pause": False,
+        "board_size": appState["board_size"],
+        "wrap": appState["wrap"],
 
         # Simulation variables
         "simSteps": 0,
@@ -148,6 +150,13 @@ def drawGrid(gameState, appState):
     for i in range(int(resolution[1] / cell_size_px)):
         pygame.draw.line(screen, config.COLOR_GRID, (0, i * cell_size_px + grid_offset_px[1]), (resolution[0], i * cell_size_px + grid_offset_px[1]))
 
+    # If there is a board size limit, draw a border
+    if(gameState["board_size"][0] != -1):
+        pygame.draw.line(screen, config.COLOR_GRID, ((gameState["board_size"][0] + pos[0]) * cell_size_px, 0), ((gameState["board_size"][0] + pos[0]) * cell_size_px, resolution[1]), 3)
+        pygame.draw.line(screen, config.COLOR_GRID, (pos[0] * cell_size_px, 0), (pos[0] * cell_size_px, resolution[1]), 3)
+    if(gameState["board_size"][1] != -1):
+        pygame.draw.line(screen, config.COLOR_GRID, (0, (gameState["board_size"][1] + pos[1]) * cell_size_px), (resolution[0], (gameState["board_size"][1] + pos[1]) * cell_size_px), 3)
+        pygame.draw.line(screen, config.COLOR_GRID, (0, pos[1] * cell_size_px), (resolution[0], pos[1] * cell_size_px), 3)
 
 def drawCells(gameState, appState):
     screen = appState["screen"]
@@ -158,9 +167,8 @@ def drawCells(gameState, appState):
     cell_size_px = int(config.UNIT * zoom_factor)
     pos_px = (int(offset[0] * cell_size_px), int(offset[1] * cell_size_px))
 
-    for i in range(len(board)):
-        pygame.draw.rect(screen, config.COLOR_CELL, (board[i][0]*cell_size_px + pos_px[0],
-                         board[i][1]*cell_size_px + pos_px[1], cell_size_px, cell_size_px))
+    for cell in board:
+        pygame.draw.rect(screen, config.COLOR_CELL, (cell[0] * cell_size_px + pos_px[0], cell[1] * cell_size_px + pos_px[1], cell_size_px, cell_size_px))
 
 def drawHUD(gameState, appState):
     resolution = appState["resolution"]
@@ -189,55 +197,73 @@ def drawHUD(gameState, appState):
 
 
 # ---------- Game Logic ----------
+
 def handleGameLogic(gameState):
-
-    if(gameState["pause"]):
+    if gameState["pause"]:
         return
 
-    # Check if game should be updated
-    timeSinceStep = (pygame.time.get_ticks() - gameState["simTimer"])
-    if(timeSinceStep > 1/gameState["simSpeed"] * 1000):
-        gameState["simTimer"] = int(pygame.time.get_ticks())
-    else:
+    current_time = pygame.time.get_ticks()
+    sim_timer = gameState["simTimer"]
+    sim_speed = gameState["simSpeed"]
+
+    time_since_step = current_time - sim_timer
+    time_threshold = 1000 / sim_speed
+
+    if time_since_step < time_threshold:
         return
-    
+
+    sim_timer = current_time
+    gameState["simTimer"] = sim_timer
+
     board = gameState["board"]
     new_board = set()
+    board_size = gameState["board_size"]
 
-    # Create a set to store all neighbor coordinates
-    neighbor_coords = set()
+    live_neighbors_count = {}  # Use a dictionary to track live neighbor counts
 
-    # Iterate through live cells and add neighbors
-    for cell in board:
-        x, y = cell
+    for x, y in board:
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 if dx == 0 and dy == 0:
                     continue
                 neighbor = (x + dx, y + dy)
-                if neighbor not in neighbor_coords:
-                    neighbor_coords.add(neighbor)
-    
-    # Apply Conway's Game of Life rules
-    for coord in neighbor_coords:
-        x, y = coord
-        live_neighbors = sum((x + dx, y + dy) in board for dx in [-1, 0, 1] for dy in [-1, 0, 1] if dx != 0 or dy != 0)
-        if (x, y) in board and 2 <= live_neighbors <= 3:
+                live_neighbors_count[neighbor] = live_neighbors_count.get(neighbor, 0) + 1
+
+    for cell in live_neighbors_count:
+        x, y = cell
+        count = live_neighbors_count.get(cell, 0)
+
+        if (x, y) in board and 2 <= count <= 3:
             new_board.add((x, y))
-        elif (x, y) not in board and live_neighbors == 3:
+        elif (x, y) not in board and count == 3:
             new_board.add((x, y))
 
-    # Update the game board with the new generation
-    gameState["board"] = list(new_board)
+    gameState["board"] = new_board
 
-    # Increment the simulation step counter
+    if board_size != (-1, -1):
+        x_max, y_max = board_size
+        gameState["board"] = {(x, y) for (x, y) in new_board if 0 <= x < x_max and 0 <= y < y_max}
+
     gameState["simSteps"] += 1
 
-def loadPreset(gameState, preset):
+    if gameState["simSteps"] % 100 == 0:
+        print("Number of cells: " + str(len(new_board)))
+
+
+
+
+def loadPreset(preset):
+
+    if(preset == None):
+        return []
+    
+    board = []
 
     with open('presets.json', 'r') as f:
         data = json.load(f)
 
     for cell in data[preset]["live_cells"]:
-        gameState["board"].append(tuple(cell))
+        board.append(tuple(cell))
+
+    return board
 

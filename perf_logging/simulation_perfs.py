@@ -4,7 +4,7 @@ import datetime
 import json
 from perf_logging import generateGraph
 
-STEP_LIMIT = 2000
+STEP_LIMIT = 5000
 
 def init_log(appState):
 
