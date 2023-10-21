@@ -42,7 +42,8 @@ def graphData(log_name):
     for entry in data["data"]:
         for frame_time in entry["frame_time"]:
             points.append(frame_time)
-    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "perf_logging/graphs", data, save=True)
+
+    generateGraph(points, "Steps", "Frame Time (ns)",  log_name[:-12], "perf_logging/graphs", data, save=True)
 
 if __name__ == "__main__":
 
@@ -54,5 +55,5 @@ if __name__ == "__main__":
     for entry in data["data"]:
         for frame_time in entry["frame_time"]:
             points.append(frame_time)
-    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "graphs", data, save=False)
+    generateGraph(points, "Steps", "Frame Time (ns)",  log_name[:-12], "graphs", data, save=False)
     plt.show()
