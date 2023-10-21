@@ -2,24 +2,30 @@ import matplotlib.pyplot as plt
 import json
 import matplotlib as mpl
 
-def generateGraph(points, x_label, y_label, title, save_path, data, dpi=100):
-    plt.plot(points)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.title(title)
+def generateGraph(points, x_label, y_label, title, save_path, data, dpi=100, save=False):
+    # Create a figure with two subplots: one for the graph and one for the info
+    fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1], 'hspace': 0.2}, figsize=(1280 / dpi, 720 / dpi), dpi=dpi)
 
-    # Add corresponding parameters below the graph
-    plt.text(0.02, -0.2, "Resolution : " + str(data["resolution"]), fontsize=12, transform=plt.gca().transAxes)
-    plt.text(0.02, -0.275, "GUI : " + str(data["gui"]), fontsize=12, transform=plt.gca().transAxes)
-    plt.text(0.02, -0.35, "Log Type : " + str(data["log_type"]), fontsize=12, transform=plt.gca().transAxes)
-    plt.text(0.02, -0.425, "Log Name : " + str(data["log_name"]), fontsize=12, transform=plt.gca().transAxes)
-    plt.text(0.02, -0.5, "Speed : " + str(data["sim_speed"]), fontsize=12, transform=plt.gca().transAxes)
+    # Plot the graph on the top subplot
+    ax1.plot(points)
+    ax1.set_xlabel(x_label)
+    ax1.set_ylabel(y_label)
+    ax1.set_title(title)
 
-    plt.subplots_adjust(bottom=0.3)
-
-    plt.savefig(save_path + "/" + title + ".png", dpi=dpi)
-    plt.show()
-
+    # Add corresponding parameters below the graph in the bottom subplot
+    info_text = (
+        f"Resolution: {data['resolution']}\n"
+        f"GUI: {data['gui']}\n"
+        f"Log Type: {data['log_type']}\n"
+        f"Log Name: {data['log_name']}\n"
+        f"Speed: {data['sim_speed']}\n"
+        f"Time: {round(data['test_time'])}ms"
+    )
+    ax2.text(0.02, 0.2, info_text, fontsize=12, transform=ax2.transAxes)
+    ax2.axis('off')  # Remove axis from the info subplot
+    if save:
+        # Save the figure with the specified DPI
+        plt.savefig(f"{save_path}/{title}.png", dpi=dpi)
 
 
 def loadData(log_path):
@@ -36,7 +42,7 @@ def graphData(log_name):
     for entry in data["data"]:
         for frame_time in entry["frame_time"]:
             points.append(frame_time)
-    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "perf_logging/graphs", data)
+    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "perf_logging/graphs", data, save=True)
 
 if __name__ == "__main__":
 
@@ -48,4 +54,5 @@ if __name__ == "__main__":
     for entry in data["data"]:
         for frame_time in entry["frame_time"]:
             points.append(frame_time)
-    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "graphs", data)
+    generateGraph(points, "Steps", "Frame Time (ns)",  data["log_type"] + " Performance " + log_name[:-12], "graphs", data, save=False)
+    plt.show()
