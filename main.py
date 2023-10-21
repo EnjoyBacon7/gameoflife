@@ -20,6 +20,10 @@ def main():
     # Initialise the game state
     gameState = simulation.init()
     
+    # Load preset if specified
+    if appState["preset"] != None:
+        simulation.loadPreset(gameState, appState["preset"])
+
     # Main loop
     if appState["logging"] != 0:
         simulation_perfs.loop(appState, gameState)

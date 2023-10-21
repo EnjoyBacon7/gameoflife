@@ -2,11 +2,17 @@
 
 # Define a list of parameters
 parameters=(
-  "-lf -r 1080 720"
-  "-lf -r 1080 720 -nogui"
-  "-ls -r 1080 720 -nogui"
-  "-lg -r 1080 720"
-  "-lg -r 1080 720 -nogui"
+  "-lf -r 1080 720 -p gosper_glider_gun"
+  "-lf -r 1080 720 -nogui -p gosper_glider_gun"
+  "-ls -r 1080 720 -nogui -p gosper_glider_gun"
+  "-lg -r 1080 720 -p gosper_glider_gun"
+  "-lg -r 1080 720 -nogui -p gosper_glider_gun"
+
+  "-lf -r 1080 720 -p penta_decathlon"
+  "-lf -r 1080 720 -nogui -p penta_decathlon"
+  "-ls -r 1080 720 -nogui -p penta_decathlon"
+  "-lg -r 1080 720 -p penta_decathlon"
+  "-lg -r 1080 720 -nogui -p penta_decathlon"
 )
 
 # Loop over the parameters and run the Python script for each
