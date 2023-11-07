@@ -114,7 +114,7 @@ def handleEvents(appState, gameState):
         cell_size_px = int(config.UNIT * gameState["zoom_factor"])
         pos = (int((pos[0] - gameState["offset"][0] * cell_size_px) / cell_size_px),
                int((pos[1] - gameState["offset"][1] * cell_size_px) / cell_size_px))
-        gameState["board"].append(pos)
+        gameState["board"].add(pos)
 
 
 
@@ -248,8 +248,6 @@ def handleGameLogic(gameState):
 
     if gameState["simSteps"] % 100 == 0:
         print("Number of cells: " + str(len(new_board)))
-
-
 
 
 def loadPreset(preset):
